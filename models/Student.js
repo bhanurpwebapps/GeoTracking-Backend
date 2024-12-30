@@ -23,11 +23,51 @@ const studentSchema = new mongoose.Schema(
 
     authorizedAreas: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Area' }],
     status:{type:String,enum:['Active','InActive']},
+    // Add DateOfBirth field
+    dateOfBirth: { type: Date, required: true },
+    age: { type: Number, required: false }, // Added age field
   },
   { timestamps: true }
 );
 
 // Add auto-increment plugin for rollNo
 studentSchema.plugin(AutoIncrement, { inc_field: 'rollNo', start_seq: 1 });
+
+studentSchema.pre('save', function (next) {
+  if (this.isNew || this.isModified('dateOfBirth')) {
+    const now = new Date();
+    const birthDate = new Date(this.dateOfBirth);
+    let age = now.getFullYear() - birthDate.getFullYear();
+    const monthDifference = now.getMonth() - birthDate.getMonth();
+
+    // Adjust age if birthday hasn't occurred yet this year
+    if (monthDifference < 0 || (monthDifference === 0 && now.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    // Set the calculated age to the age field
+    this.age = age;
+  }
+  next(); // Move to the next middleware or save operation
+});
+
+
+// // Virtual for Age calculation
+// studentSchema.virtual('age').get(function() {
+//   const now = new Date();
+//   const birthDate = new Date(this.dateOfBirth);
+//   let age = now.getFullYear() - birthDate.getFullYear();
+//   const monthDifference = now.getMonth() - birthDate.getMonth();
+
+//   // Adjust age if birthday hasn't occurred yet this year
+//   if (monthDifference < 0 || (monthDifference === 0 && now.getDate() < birthDate.getDate())) {
+//     age--;
+//   }
+//   return age;
+// });
+
+// Ensure the virtual is included when calling .toJSON() or .toObject()
+studentSchema.set('toJSON', { virtuals: true });
+studentSchema.set('toObject', { virtuals: true });
 
 module.exports = mongoose.model('Student', studentSchema);

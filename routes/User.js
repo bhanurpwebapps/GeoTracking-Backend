@@ -1,6 +1,7 @@
 
 const express = require('express');
 const User = require('../models/User'); //Assuming the user schema is in `models/user.model.js`
+const bcrypt = require('bcrypt');
 const router = express.Router();
 
 router.post('/create', async (req, res) => {
@@ -132,6 +133,52 @@ router.get('/', async (req, res) => {
         res.status(200).json(users);
     } catch (error) {
         res.status(500).json({ error: 'Error fetching users', details: error.message });
+    }
+});
+
+
+router.post('/reset-password', async (req, res) => {
+    const { userId, currentPassword, newPassword, confirmPassword } = req.body;
+
+    try {
+        // Validate inputs
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            return res.status(400).json({ success: false, message: 'All fields are required.' });
+        }
+
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({ success: false, message: 'New password and confirmation do not match.' });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({ success: false, message: 'Password must be at least 6 characters long.' });
+        }
+
+        // Find the user by ID
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found.' });
+        }
+
+        // Check if the current password matches
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ success: false, message: 'Current password is incorrect.' });
+        }
+
+        // Hash the new password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        
+
+        // Update the user's password
+        user.password = hashedPassword;
+        await user.save();
+
+        res.json({ success: true, message: 'Password updated successfully.' });
+    } catch (error) {
+        console.error('Error resetting password:', error);
+        res.status(500).json({ success: false, message: 'An error occurred while resetting the password.' });
     }
 });
 

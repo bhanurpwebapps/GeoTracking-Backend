@@ -5,7 +5,7 @@ const router = express.Router();
 
 // Create Student
 router.post('/create', async (req, res) => {
-  const { studentRegistrationNo, studentName, rollNo, classRoom, address, contact, bleDeviceId, clientId, authorizedAreas, status } = req.body;
+  const { studentRegistrationNo, studentName, rollNo, classRoom, address, contact, bleDeviceId, clientId, authorizedAreas, status,dateOfBirth } = req.body;
 
   try {
     // Check if the student already exists by registration number
@@ -22,6 +22,7 @@ router.post('/create', async (req, res) => {
       student.clientId = clientId || student.clientId;
       student.authorizedAreas = authorizedAreas || student.authorizedAreas;
       student.status = status || student.status;
+      student.dateOfBirth = dateOfBirth || student.dateOfBirth;
       await student.save();
       return res.status(200).json({ message: 'Student updated successfully', student });
     } else {
@@ -36,7 +37,8 @@ router.post('/create', async (req, res) => {
         bleDeviceId,
         clientId,
         authorizedAreas,
-        status
+        status,
+        dateOfBirth
       });
 
       await student.save();
@@ -118,7 +120,9 @@ router.get('/', async (req, res) => {
           },
           classRoomName: { $arrayElemAt: ['$classRoomDetails.name', 0] },  // Get classRoom name (single value)
           authorizedAreaNames: { $concatArrays: ['$authorizedAreaDetails.name', '$classRoomDetails.name'] },  // Authorized areas' names
-          status:1
+          status:1,
+          dateOfBirth:1,
+          age:1
         },
       },
     ]);
@@ -211,6 +215,9 @@ router.get('/search', async (req, res) => {
           },
           classRoomName: { $arrayElemAt: ['$classRoomDetails.name', 0] },  // Get classRoom name (single value)
           authorizedAreaNames: { $concatArrays: ['$authorizedAreaDetails.name', '$classRoomDetails.name'] },  // Authorized areas' names
+          status:1,
+          dateOfBirth:1,
+          age:1
         },
       },
     ]);
@@ -297,6 +304,9 @@ router.get('/search', async (req, res) => {
           },
           classRoomName: { $arrayElemAt: ['$classRoomDetails.name', 0] },  // Get classRoom name (single value)
           authorizedAreaNames: { $concatArrays: ['$authorizedAreaDetails.name', '$classRoomDetails.name'] },  // Authorized areas' names
+          status:1,
+          dateOfBirth:1,
+          age:1
         },
       },
     ]);

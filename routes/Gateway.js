@@ -107,6 +107,7 @@ router.get('/search', async (req, res) => {
           minRSSI: '$minRSSI',
           maxRSSI: '$maxRSSI',
           status: '$status',
+          connectedStatus:'$connectedStatus',
           areaId: '$areaId',
           areaName: '$areaDetails.name' // Pull only the name of the area
         }
@@ -152,6 +153,7 @@ router.get('/search', async (req, res) => {
           minRSSI: '$minRSSI',
           maxRSSI: '$maxRSSI',
           status: '$status',
+          connectedStatus:'$connectedStatus',
           areaId: '$areaId',
           areaName: '$areaDetails.name' // Pull only the name of the area
         }
@@ -208,6 +210,7 @@ router.get('/', async (req, res) => {
           minRSSI: '$minRSSI',
           maxRSSI: '$maxRSSI',
           status: '$status',
+          connectedStatus:'$connectedStatus',
           areaId: '$areaId',
           areaName: '$areaDetails.name' // Pull only the name of the area
         }

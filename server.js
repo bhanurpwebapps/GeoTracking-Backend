@@ -5,15 +5,18 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const bcrypt = require('bcrypt');
 const User = require('./models/User');
-const { router: authRoutes } = require('./routes/Auth');
-const schoolRoutes = require('./routes/school');
-const areaRoutes = require('./routes/area');
-const gatewayRoutes = require('./routes/gateway');
-const studentRoutes = require('./routes/student');
-const clientRoutes = require('./routes/client');
-const userRoutes = require('./routes/user');
+const { router: authRoutes} = require('./routes/Auth');
+const Client = require('./models/Client');
+const schoolRoutes = require('./routes/School');
+const areaRoutes = require('./routes/Area');
+const gatewayRoutes = require('./routes/Gateway');
+const studentRoutes = require('./routes/Student');
+const clientRoutes = require('./routes/Client');
+const userRoutes = require('./routes/User');
 const dashboardRoutes = require('./routes/Dashboard');
-const mqtt = require('./utils/mqtt');
+const appProviderdashboardRoutes = require('./routes/AppProviderDashBoard');
+const AttendanceRoutes = require('./routes/Attendance');
+//const Client = require('./models/Client');
 dotenv.config();
 
 const app = express();
@@ -64,6 +67,7 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
   });
 
 
+
 // Authentication Routes
 app.use('/api/auth', authRoutes);
 
@@ -88,13 +92,27 @@ app.use('/api/students', studentRoutes);
 //dashboard
 app.use('/api/dashboard',dashboardRoutes);
 
+//app provider dashboard
+app.use('/api/productadmindashboard',appProviderdashboardRoutes);
+
 app.use('/api/schools',schoolRoutes);
 
-
+app.use('/api/Attendance',AttendanceRoutes);
 
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-// MQTT server
-//mqtt.listen(server);
+
+// Socket.io Setup
+const io = require('socket.io')(server, {
+  cors: { origin: '*', methods: ['GET', 'POST'], credentials: true },
+});
+
+
+// Attach to global
+global.io = io;
+
+
+
+const mqtt = require('./utils/mqtt');

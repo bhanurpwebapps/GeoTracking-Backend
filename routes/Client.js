@@ -1,6 +1,6 @@
 
 const express = require('express');
-const Client = require('../models/client');
+const Client = require('../models/Client');
 const User = require('../models/User'); //Assuming the user schema is in `models/user.model.js`
 const router = express.Router();
 
@@ -142,46 +142,7 @@ router.get('/search', async (req, res) => {
   });
   
 
-// // Create Client and Admin User
-// // Create Area
-// router.post('/create', async (req, res) => {
-//   const { name, email, contactNumber, address, subscriptionPlan, status } = req.body;
 
-//   try {
-//     // Step 1: Create Client
-//     const newClient = new Client({
-//       name,
-//       email,
-//       contactNumber,
-//       address,
-//       subscriptionPlan,
-//       status,
-//     });
-
-//     const savedClient = await newClient.save();
-
-//     // Step 2: Create Admin User for Client
-//     const adminUser = new User({
-//       name: `${name} Admin`, // Default admin name
-//       username: `${name.toLowerCase()}-admin`, // Default admin username
-//       email: email, // Using client's email
-//       password: 'password123', // Default password, ensure this is hashed in the User model
-//       role: 'Admin',
-//       userType: 'ClientUser',
-//       clientId: savedClient._id, // Reference to the newly created client
-//     });
-
-//     const savedAdminUser = await adminUser.save();
-
-//     res.status(201).json({
-//       message: 'Client and admin user created successfully!',
-//       client: savedClient,
-//       adminUser: savedAdminUser,
-//     });
-//   } catch (err) {
-//     res.status(500).json({ error: 'Error creating client or admin user', details: err.message });
-//   }
-// });
 
 // Route to get all clients
 router.get('/', async (req, res) => {
